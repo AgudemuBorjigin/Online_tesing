@@ -115,9 +115,11 @@ def sortData(subjList, data, conds, snrs, followup):
     scores_all = corrects_all/counters_all
     return data_fit, conds, subjNames, subj_bad, scores_all, data_rt
 
-##########################################################
-# all subjects
-##########################################################
+###########################################################################################
+# all subjects, other data extraction scripts (for FM, ITD, ILD) use exactly the same order,
+# it is important for crowding the data points across measurements to the same subject for 
+# later analysis
+###########################################################################################
 subjList = ['5f10e4279df7fd42944120f3',
             '5ed427e3bcd0c00b58a177c0',
             '5ec99d7b36e0214b2f821627',
@@ -318,6 +320,10 @@ subjList = ['5f10e4279df7fd42944120f3',
             '5de1986c040f531f97eb6092',
             '5c2f9cddc5459b0001bae5b3',
             '5ea20bb3c2a8ea109cc6ee41']
+# what's below in the commented area is just for record keeping; keeping track of subjects with poor
+# scores (below the set percent correct and these subjects are not included in the list above) These subjects below 
+# were asked to repeat the tasks. If the re-test meets the threshold requirement (for quality), they get moved up 
+# to the list above
 # echo-ref missing: 5e90a1eaad04060882d17a3d 
 # poor echo-ref: 5a84f454ae9a0b0001a9e4e5
 # poor WiN: 5c7ead380ce9a10016fb5ebf
@@ -331,7 +337,7 @@ subjList = ['5f10e4279df7fd42944120f3',
 # poor FM: 
 # paranthesis means poor after re-test
 ##########################################################
-#
+# 
 ##########################################################
 conds = np.array(['ref','echo-ref', 'noise', 'echo-noise',
          'echo-pitch', 'echo-space', 'echo-sum', 'echo', 
@@ -344,17 +350,22 @@ jsonName = 'WiN_results.json'
 f = open(jsonName, 'r')
 data = json.load(f)
 followup = 0
+# the main function for extraction data of interests from the variable—data
 data_fit, conds, subjNames, subj_bad, scores_all, data_rt = sortData(subjList, data, conds, snrs, followup)
-#figure_single(snrs[1], scores_all[1], conds[1])
-index_fig = [4, 5, 6, 7]
-#index_fig = [8, 9, 10, 11]
-#index_fig = [0, 1, 2, 3]
-figure(snrs[index_fig], scores_all[index_fig], conds[index_fig])
 f.close
 
+# some simple plotting functions
+# figure_single(snrs[1], scores_all[1], conds[1])
+index_fig = [4, 5, 6, 7]
+# index_fig = [8, 9, 10, 11]
+# index_fig = [0, 1, 2, 3]
+figure(snrs[index_fig], scores_all[index_fig], conds[index_fig])
 
 ##################################################################################################
 # follow-up: echo-ref
+# there was an error in the stimulus, so the "echo-ref" condition was re-measured (the problem was found
+# early enough that only a subset of the subjects were affected)
+# the following code was to load the re-measured data and over-write the problematic data from above
 ##################################################################################################
 subjList_followup = ['5c1443d21f6f150001494f6a',
                      '5f107aa051372032695c8e2f',
