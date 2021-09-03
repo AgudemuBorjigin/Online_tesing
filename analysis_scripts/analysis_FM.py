@@ -10,16 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 
-def first_subj_index(data, subj):
-    for i in range(len(data)):
-        if data[i][0]['subject'] == subj:
-            index_subj = i
-    return index_subj
-def last_instruction_index(data_subj):
-    for i in range(len(data_subj)):
-        if data_subj[i]['trial_type'] == 'html-button-response':
-            index = i
-    return index
 def find(s, ch):
     return [i for i, ltr in enumerate(s) if ltr == ch]
 def figure(x, y):
@@ -27,26 +17,54 @@ def figure(x, y):
     plt.xlabel('fdev [Hz]')
     plt.ylabel('Percent Correct')
     plt.grid(color='r', linestyle='--', linewidth=0.5)
+
+# to find subject's order within the dataset    
+def first_subj_index(data, subj):
+    for i in range(len(data)):
+        if data[i][0]['subject'] == subj:
+            index_subj = i
+    return index_subj
+# returns the index of the last instructional page, to locate where to start extracting the data from the actual
+# task page
+def last_instruction_index(data_subj):
+    for i in range(len(data_subj)):
+        if data_subj[i]['trial_type'] == 'html-button-response':
+            index = i
+    return index
+
+# the main function extracting the data
 def sortData(subjList, data, fdevs):
+    # to determine the index of a subject's data within all subjects' data
+    # the subject names were copied from the participation records, but 
+    # the order of the start time of the measurements is not necessarily the
+    # the same with the order of the data (ordered by completion time)
     subj_bad = []
     subjIndexList = np.zeros((len(subjList),), dtype=int)
     for si, subj in enumerate(subjList):
         subjIndexList[si] = first_subj_index(data, subj)
-    
+    # variable initializations for storing extracted data 
     subjNames = []
-    data_fit = np.zeros((len(subjIndexList), len(fdevs), 3))
+    data_fit = np.zeros((len(subjIndexList), len(fdevs), 3)) # len(snrs)->num of conds;len(snrs[0])->
+                                                             # num of snr; 3 columns: snrs, num of corrects, num of trials
+    # for populaiton across subjects
     counters_all = np.zeros((len(fdevs),), dtype=int)
     corrects_all = np.zeros((len(fdevs),), dtype=int)
+    # data extraction
     for si, subj_num in enumerate(subjIndexList):
+        # data for a single subject
         data_subj = data[subj_num]
+        # temporary variables 
         counters_single = np.zeros((len(fdevs),), dtype=int)
         corrects_single = np.zeros((len(fdevs),), dtype=int)
-        subjNames.append(data_subj[0]['subject'])
         counter_easy = np.zeros((1,), dtype=int)
         correct_easy = np.zeros((1,), dtype=int)
+        # append subject name to the list
+        subjNames.append(data_subj[0]['subject'])
+        # extracting the index for the first trial, after the instructional pages
         idx_first_trial = last_instruction_index(data_subj) + 1
         for i, data_trial in enumerate(data_subj[idx_first_trial:]):
             if data_trial['button_pressed']:
+                # information extraction
                 annot = data_trial['annot']
                 index = find(annot, "'")
                 fdev = float(annot[index[2]+1:index[3]-2])
@@ -54,8 +72,11 @@ def sortData(subjList, data, fdevs):
                 easy = data_trial['cond']
                 subj = data_trial['subject']
                 # rt = data_trial['rt']
+                # counting the number of total trials and correct responses for each snr in each condition
+                # index needs to be found based on 'cond' and 'snr' because trials across conditions and snrs were shuffled
                 counters_single[np.where(fdevs == fdev)[0][0]] += 1
                 counters_all[np.where(fdevs == fdev)[0][0]] += 1
+                # counting the number of correct trials
                 if correct:
                     corrects_single[np.where(fdevs == fdev)[0][0]] += 1
                     corrects_all[np.where(fdevs == fdev)[0][0]] += 1
@@ -63,15 +84,21 @@ def sortData(subjList, data, fdevs):
                     counter_easy += 1
                     if correct:
                         correct_easy += 1
+        # calculation of percent correct at easy trials and determining the "bad" subjects, if "bad", do re-test; download the
+        # the new data collection; "first_subj_index" function will only pick the newest data
         score_easy = correct_easy/counter_easy
+        # storing the extracted data for each subject
         data_fit[si] = np.stack((20*np.log10(fdevs), corrects_single, counters_single), axis = -1)
         if score_easy < 0.75:
             subj_bad.append(subj)
+    # population percent correct
     scores_all = corrects_all/counters_all
     return data_fit, subjNames, subj_bad, scores_all
-##########################################################
-# all subjects
-##########################################################
+###########################################################################################
+# all subjects, other data extraction scripts (for FM, ITD, ILD) use exactly the same order,
+# it is important for crowding the data points across measurements to the same subject for 
+# later analysis
+###########################################################################################
 subjList = ['5f10e4279df7fd42944120f3',
             '5ed427e3bcd0c00b58a177c0',
             '5ec99d7b36e0214b2f821627',
@@ -272,6 +299,10 @@ subjList = ['5f10e4279df7fd42944120f3',
             '5de1986c040f531f97eb6092',
             '5c2f9cddc5459b0001bae5b3',
             '5ea20bb3c2a8ea109cc6ee41']
+# what's below in the commented area is just for record keeping; keeping track of subjects with poor
+# scores (below the set percent correct and these subjects are not included in the list above) These subjects below 
+# were asked to repeat the tasks. If the re-test meets the threshold requirement (for quality), they get moved up 
+# to the list above
 # echo-ref missing: 5e90a1eaad04060882d17a3d 
 # poor echo-ref: 5a84f454ae9a0b0001a9e4e5
 # poor WiN: 5c7ead380ce9a10016fb5ebf
@@ -291,6 +322,7 @@ fdevs = np.array([0.1, 0.2, 0.4, 0.8, 1.6, 3.2])
 jsonName = 'FM_results.json'
 f = open(jsonName, 'r')
 data = json.load(f)
+# the main function for extraction data of interests from the variable—data
 data_fit, subjNames, subj_bad, scores_all = sortData(subjList, data, fdevs)
 figure(fdevs, scores_all)  
 scipy.io.savemat('data_FM.mat', dict(data = data_fit, subjNames = subjNames)) 
