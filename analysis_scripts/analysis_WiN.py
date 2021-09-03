@@ -10,23 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 
-def subj_index_latest(data, subj):
-    for i in range(len(data)):
-        if data[i][0]['subject'] == subj:
-            index_subj = i
-    return index_subj
-def last_instruction_index(data_subj):
-    for i in range(len(data_subj)):
-        if data_subj[i]['trial_type'] == 'html-button-response':
-            index = i
-    return index
-def find(s, ch):
-    return [i for i, ltr in enumerate(s) if ltr == ch]
-def replica_zero(the_array):
-    the_array_copy = the_array.copy()
-    for i, e in enumerate(the_array_copy):
-        the_array_copy[i] = np.zeros((len(e),), dtype=int)
-    return the_array_copy
+# some plotting functions
 def figure(x, y, conds):
     handles_legend = []
     for i in range(len(x)):
@@ -37,6 +21,7 @@ def figure(x, y, conds):
     plt.legend(handles = handles_legend, bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(color='r', linestyle='--', linewidth=0.5)
     plt.tight_layout()
+
 def figure_single(x, y, cond):
     handles_legend = []
     handle, = plt.plot(x, y, 'o-', label = cond)
@@ -46,16 +31,46 @@ def figure_single(x, y, cond):
     plt.legend(handles = handles_legend, bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(color='r', linestyle='--', linewidth=0.5)
     plt.tight_layout()
+
+# to find subject's order within the dataset
+def subj_index_latest(data, subj):
+    for i in range(len(data)):
+        if data[i][0]['subject'] == subj:
+            index_subj = i
+    return index_subj
+# creates arrays of zeros of the same size as the input array
+def replica_zero(the_array):
+    the_array_copy = the_array.copy()
+    for i, e in enumerate(the_array_copy):
+        the_array_copy[i] = np.zeros((len(e),), dtype=int)
+    return the_array_copy
+# returns the index of the last instructional page, to locate where to start extracting the data from the actual
+# task page
+def last_instruction_index(data_subj):
+    for i in range(len(data_subj)):
+        if data_subj[i]['trial_type'] == 'html-button-response':
+            index = i
+    return index
+# return the index
+def find(s, ch):
+    return [i for i, ltr in enumerate(s) if ltr == ch]
+
+# the main function extracting the data
 def sortData(subjList, data, conds, snrs, followup):
     subj_bad = []
     # to determine the index of a subject's data within all subjects' data
+    # the subject names were copied from the participation records, but 
+    # the order of the start time of the measurements is not necessarily the
+    # the same with the order of the data (ordered by completion time)
     subjIndexList = np.zeros((len(subjList),), dtype=int)
     for si, subj in enumerate(subjList):
         subjIndexList[si] = subj_index_latest(data, subj)
     # variable initializations for storing extracted data 
     subjNames = []
-    data_fit = np.zeros((len(subjIndexList), len(snrs), len(snrs[0]), 3))
-    data_rt = np.zeros((len(subjIndexList), len(snrs), len(snrs[0]), 4))
+    data_fit = np.zeros((len(subjIndexList), len(snrs), len(snrs[0]), 3)) # len(snrs)->num of conds;len(snrs[0])->
+                                                                          # num of snr; 3 columns: snrs, num of corrects, num of trials
+    data_rt = np.zeros((len(subjIndexList), len(snrs), len(snrs[0]), 4))  # reacction time: 4 reps->1 row 4 columns
+    # for populaiton across subjects
     counters_all = replica_zero(snrs)
     corrects_all = replica_zero(snrs)
     # data extraction
@@ -66,11 +81,11 @@ def sortData(subjList, data, conds, snrs, followup):
         counters_single = replica_zero(snrs)
         corrects_single = replica_zero(snrs)
         rts_single = np.zeros((len(snrs), len(snrs[0]), 4), dtype=int) # 4: repetitions
-        counter_easy = np.zeros((1,), dtype=int)
+        counter_easy = np.zeros((1,), dtype=int) # for easy trials
         correct_easy = np.zeros((1,), dtype=int)
         # append subject name to the list
         subjNames.append(data_subj[0]['subject'])
-        # extracting the index for the first trial, after all the instructional pages
+        # extracting the index for the first trial, after the instructional pages
         idx_first_trial = last_instruction_index(data_subj) + 1
         for i, data_trial in enumerate(data_subj[idx_first_trial:]): 
             if data_trial['button_pressed']:
@@ -84,14 +99,17 @@ def sortData(subjList, data, conds, snrs, followup):
                 easy = data_trial['cond']
                 rt = data_trial['rt']
                 # counting the number of total trials and correct responses for each snr in each condition
+                # index needs to be found based on 'cond' and 'snr' because trials across conditions and snrs were shuffled
                 index_cond = np.where(conds==cond)[0][0]
                 index_snr = np.where(snrs[index_cond] == snr)[0][0]
                 counters_single[index_cond][index_snr] += 1 # individual
+                # reaction time
                 for j in range(len(rts_single[index_cond][index_snr])):
                     if rts_single[index_cond][index_snr][j] == 0:
                         rts_single[index_cond][index_snr][j] = rt
                         break
                 counters_all[index_cond][index_snr] += 1 # population
+                # counting the number of correct trials
                 if correct:
                     corrects_single[index_cond][index_snr] += 1
                     corrects_all[index_cond][index_snr] += 1
@@ -99,7 +117,9 @@ def sortData(subjList, data, conds, snrs, followup):
                     counter_easy += 1
                     if correct:
                         correct_easy += 1 
-        # calculation of percent correct at easy trials and determining the "bad" subjects
+        # calculation of percent correct at easy trials and determining the "bad" subjects, thresholds are different for
+        # the main data collection and follow-up data collection (follow-up is higher because the subjects already did the
+        # measurements once)
         score_easy = correct_easy/counter_easy
         if followup:
             thresh_easy = 0.5
@@ -107,7 +127,7 @@ def sortData(subjList, data, conds, snrs, followup):
             thresh_easy = 0.75
         if score_easy < thresh_easy:
             subj_bad.append(subj)
-        # storing the extracted data for each subject
+        # storing the extracted data for each subject, len(snrs)->num of conds
         for i in range(len(snrs)):
             data_fit[s, i] = np.stack((snrs[i], corrects_single[i], counters_single[i]), axis = -1)
             data_rt[s] = rts_single
@@ -351,6 +371,8 @@ f = open(jsonName, 'r')
 data = json.load(f)
 followup = 0
 # the main function for extraction data of interests from the variable—data
+# data_rt: reaction time
+# data_fit: main data variable
 data_fit, conds, subjNames, subj_bad, scores_all, data_rt = sortData(subjList, data, conds, snrs, followup)
 f.close
 
@@ -416,10 +438,10 @@ followup = 1
 data_fit_followup, conds_followup, subjNames_followup, subj_bad_followup, scores_all_followup, data_rt_followup = sortData(subjList_followup, data_followup, conds_followup, snrs_followup, followup)
 f_followup.close
 ##################################################
-# subsitute: echo-ref
+# subsitute: echo-ref; over-write the data
 ##################################################
-data_fit_clone = data_fit
-data_rt_clone = data_rt
+data_fit_clone = data_fit # main data 
+data_rt_clone = data_rt # reaction time
 for s, subj in enumerate(subjList_followup):
     subj_idx = find(subjList, subj)
     data_fit_clone[subj_idx, 1] = data_fit_followup[s, 0]
