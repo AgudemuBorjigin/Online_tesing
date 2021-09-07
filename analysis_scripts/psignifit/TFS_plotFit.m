@@ -8,16 +8,16 @@ else
     thresh = getThreshold(result,0.5); % doesn't consider guessing/lapse rate
 end
 if plotOrNot
-    %% plot data
+    %% plot the data points
     if plotData
-        dataSize  = 10000./sum(result.data(:,3));
+        dataSize  = 10000./sum(result.data(:,3)); % size of the data point depends on the actual data size
         for i = 1:size(result.data, 1)
-            h = plot(result.data(i,1),result.data(i,2)./result.data(i,3),'.','MarkerSize',sqrt(dataSize*result.data(i,3)),'Color',dataColor);
+            h = plot(result.data(i,1),result.data(i,2)./result.data(i,3),'.','MarkerSize',sqrt(dataSize*result.data(i,3)),'Color',dataColor); %#ok<*NASGU>
             hold on;
             errorbar(result.data(i,1),result.data(i,2)./result.data(i,3), error(i),'-', 'Color',dataColor, 'LineWidth',lineWidth);
         end
     end
-    %% plot fitted function
+    %% plot the fitted function
     % log scale should be used in cases where: sigmoidName is {'Weibull','logn','weibull'}
     xlength   = max(result.data(:,1))-min(result.data(:,1));
     x         = linspace(min(result.data(:,1)),max(result.data(:,1)),1000);
@@ -26,11 +26,8 @@ if plotOrNot
     fitValuesLow    = (1-result.Fit(3)-result.Fit(4))*arrayfun(@(x) result.options.sigmoidHandle(x,result.Fit(1),result.Fit(2)),xLow)+result.Fit(4);
     fitValuesHigh   = (1-result.Fit(3)-result.Fit(4))*arrayfun(@(x) result.options.sigmoidHandle(x,result.Fit(1),result.Fit(2)),xHigh)+result.Fit(4);
     fitValues = (1-result.Fit(3)-result.Fit(4))*arrayfun(@(x) result.options.sigmoidHandle(x,result.Fit(1),result.Fit(2)),x)+result.Fit(4);
-    if plotData
-        h = plot(x, fitValues,'Color', lineColor,'LineWidth',lineWidth);
-    else
-        h = plot(x, fitValues,'Color', lineColor,'LineWidth',lineWidth);
-    end
+    % plot
+    h = plot(x, fitValues,'Color', lineColor,'LineWidth',lineWidth);
     hold on;
     plot(xLow,  fitValuesLow,'--',  'Color', lineColor,'LineWidth',lineWidth)
     plot(xHigh, fitValuesHigh,'--', 'Color', lineColor,'LineWidth',lineWidth)
@@ -50,7 +47,7 @@ if plotOrNot
     % asymptotes
     plot([min(xLow),max(xHigh)],[1-result.Fit(3),1-result.Fit(3)],':','Color',lineColor, 'LineWidth',lineWidth);
     plot([min(xLow),max(xHigh)],[result.Fit(4),result.Fit(4)],':','Color',lineColor, 'LineWidth',lineWidth);
-    % CI
+    % CI: confidence interval
     %plot(result.conf_Intervals(1,:,1),repmat(result.Fit(4)+result.options.threshPC*(1-result.Fit(3)-result.Fit(4)),1,2),'Color',lineColor)
     %plot(repmat(result.conf_Intervals(1,1,1),1,2),repmat(result.Fit(4)+result.options.threshPC*(1-result.Fit(3)-result.Fit(4)),1,2)+[-.01,+.01],'Color',lineColor)
     %plot(repmat(result.conf_Intervals(1,2,1),1,2),repmat(result.Fit(4)+result.options.threshPC*(1-result.Fit(3)-result.Fit(4)),1,2)+[-.01,+.01],'Color',lineColor)

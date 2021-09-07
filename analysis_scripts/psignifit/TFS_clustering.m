@@ -1,24 +1,24 @@
 function [idx_all, C] = TFS_clustering(data_pairs, idx_good, color)
-%data_pairs = [thresh_ITD(idx_good)', thresh_FM(idx_good)', thresh_ILD(idx_good)'];
-%idx = kmeans(data_pairs, 3);
-%scatter3(data_pairs(:,1), data_pairs(:,2), data_pairs(:,3), 15, idx, 'filled');
 figure();
 ax = gca;
 numCluster = 2;
 numVar = numel(data_pairs(1,:));
-[idx, C] = kmeans(data_pairs, numCluster);
+% k-means clustering
+[idx, C] = kmeans(data_pairs, numCluster); 
+% plotting the group data with centroids
 for i = 1:numCluster
-    if numVar > 1
+    if numVar > 1 % ITD and binaural FM
         plot(data_pairs(idx==i, 1), data_pairs(idx==i, 2), 'Color', color(i), 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 18);
         hold on;
         plot(C(i,1),C(i,2),'kx', 'MarkerSize',22,'LineWidth',3);
-else
+    else % ILD
         plot(data_pairs(idx==i), 'Color', color(i), 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 18);
         hold on;
         plot(50, C(i),'kx','MarkerSize',22,'LineWidth',3);
     end
 end
 if numVar > 1
+    % plotting regression line
     mdl = fitlm(data_pairs(:, 1), data_pairs(:, 2));
     slope = mdl.Coefficients.Estimate(2);
     intersect = mdl.Coefficients.Estimate(1);
@@ -42,7 +42,7 @@ else
 end
 set(ax, 'FontSize', 24);
 hold off
-% padding idx
+% padding idx, in case not all data_pairs are good
 idx_all = 100*ones(1,numel(data_pairs(:,1)));
 j = 0;
 for i = idx_good

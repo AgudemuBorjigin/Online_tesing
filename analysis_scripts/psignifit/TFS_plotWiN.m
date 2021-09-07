@@ -1,21 +1,24 @@
 function TFS_plotWiN(data_WiN, conds, idx_all, C, ILD, all)
 threshType = 'WiN';
+% parameter settings for Bayesian functions
 options = struct;
 options.sigmoidName = 'norm'; % choose a cumulative Gaussian as the sigmoid
 options.expType     = 'nAFC'; % choose n-AFC as the paradigm of the experiment
 options.expN = 6;
-options.threshPC = 0.5;
+options.threshPC = 0.5; % it was not set for the TFS measures
 % plot options
 plotOption = 0;
 option_data = 0;
 group_legend = cell(1,2);
 nconds = size(conds, 1);
 %% grouping data
+% if all == 1, plot data without grouping
 if all == 0
     data_group1 = zeros(numel(idx_all(idx_all==1)), size(data_WiN, 2), size(data_WiN, 3), size(data_WiN, 4));
     data_group2 = zeros(numel(idx_all(idx_all==2)), size(data_WiN, 2), size(data_WiN, 3), size(data_WiN, 4));
     cnt1 = 0;
     cnt2 = 0;
+    % grouping the data into their respective group
     for s = 1:size(data_WiN, 1)
         if idx_all(s) == 1
             cnt1 = cnt1 + 1;
@@ -25,7 +28,8 @@ if all == 0
             data_group2(cnt2, :, :, :) = squeeze(data_WiN(s, :, :, :));
         end
     end
-    
+    % labeling the group as good or poor based on their respective centroid
+    % values
     if C(1, 1) < C(2, 1)
         greater = 1;
         less = 0;
@@ -57,7 +61,7 @@ if all == 0
     end
 end
 %% calculating thresholds
-if all
+if all % without grouping
     numSubj = numel(idx_all);
     thresh = zeros(numSubj, nconds);
     subjs = 1:numSubj;
@@ -65,50 +69,54 @@ if all
     for i = 1:numSubj
         thresh(i, :) = TFS_WiN_thresh(data_WiN(subjs(subjs~=i), :, :, :), options, plotOption, option_data, conds, threshType, '');
     end
+    % reordering the thresholds by conditions
     thresh = [thresh(:, 12), thresh(:, 9:11), thresh(:, 1), ...
         thresh(:, 3), thresh(:, 8), thresh(:, 5:7), thresh(:, 2), ...
         thresh(:, 4)];
-    mr_a = thresh(:, 1) - thresh(:, [1,2,3,4,6]);
-    mr_r = thresh(:, 7) - thresh(:, [7,8,9,10,12]);
-    mr = thresh(:, 1) - thresh(:, :);
-    savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/analysis/psignifit/TFS_thresh_all.mat';
+    mr_a = thresh(:, 1) - thresh(:, [1,2,3,4,6]); % masking release (anechoic)
+    mr_r = thresh(:, 7) - thresh(:, [7,8,9,10,12]); % masking release (reverberent)
+    mr = thresh(:, 1) - thresh(:, :); % masking release (all conditions with reference to anechoic-no-cue condition)
+    savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/Online_tesing/analysis_scripts/psignifit/TFS_thresh_all.mat';
     save(savename, 'thresh');
-else
+else % with grouping
     numSubj1 = size(data_group1, 1);
     numSubj2 = size(data_group2, 1);
     thresh1 = zeros(numSubj1, nconds);
     thresh2 = zeros(numSubj2, nconds);
     subjs1 = 1:numSubj1;
     subjs2 = 1:numSubj2;
+    % jackknife resampling for two groups
     for i = 1:numSubj1
         thresh1(i, :) = TFS_WiN_thresh(data_group1(subjs1(subjs1~=i), :, :, :), options, plotOption, option_data, conds, threshType, title1);
     end
     for i = 1:numSubj2
         thresh2(i, :) = TFS_WiN_thresh(data_group2(subjs2(subjs2~=i), :, :, :), options, plotOption, option_data, conds, threshType, title2);
     end
-    % changing the order
+    % changing the order by conditions
     thresh1 = [thresh1(:, 12), thresh1(:, 9:11), thresh1(:, 1), ...
         thresh1(:, 3), thresh1(:, 8), thresh1(:, 5:7), thresh1(:, 2), ...
         thresh1(:, 4)];
     thresh2 = [thresh2(:, 12), thresh2(:, 9:11), thresh2(:, 1), ...
         thresh2(:, 3), thresh2(:, 8), thresh2(:, 5:7), thresh2(:, 2), ...
         thresh2(:, 4)];
+    % masking release in anechoic, reverberent
     mr1_a = thresh1(:, 1) - thresh1(:, [1,2,3,4,6]);
     mr2_a = thresh2(:, 1) - thresh2(:, [1,2,3,4,6]);
     mr1_r = thresh1(:, 7) - thresh1(:, [7,8,9,10,12]);
     mr2_r = thresh2(:, 7) - thresh2(:, [7,8,9,10,12]);
-    mr1 = thresh1(:, 1) - thresh1(:, :);
-    mr2 = thresh2(:, 1) - thresh2(:, :);
+    % mr1 = thresh1(:, 1) - thresh1(:, :);
+    % mr2 = thresh2(:, 1) - thresh2(:, :);
     diff1 = thresh1(:, [7,8,9,10,12]) - thresh1(:, [1,2,3,4,6]);
     diff2 = thresh2(:, [7,8,9,10,12]) - thresh2(:, [1,2,3,4,6]);
     if ILD
-        savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/analysis/psignifit/TFS_thresh_groups_ILD.mat';
+        savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/Online_tesing/analysis_scripts/psignifit/TFS_thresh_groups_ILD.mat';
     else
-        savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/analysis/psignifit/TFS_thresh_groups.mat';
+        savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/Online_tesing/analysis_scripts/psignifit/TFS_thresh_groups.mat';
     end
     save(savename, 'thresh1', 'thresh2');
 end
-%% masking release
+%% plotting the data with error bar
+% masking release
 conds_legend = {'intonation', 'reverb, intonation'...
     'steady noise', 'reverb, steady noise',...
     'reverb, pitch', 'reverb, space', 'reverb, pitch+space', 'reverb, control',...
@@ -117,17 +125,15 @@ conds_legend = {'intonation', 'reverb, intonation'...
 conds_legend = [conds_legend(12), conds_legend(9:11), conds_legend(1), conds_legend(3), ...
     conds_legend(8), conds_legend(5:7), conds_legend(2), conds_legend(4)];
 conds_legend_a = conds_legend([1,2,3,4,6]);
-%conds_legend_r = conds_legend(7:12);
-
-
-if all
-    mean_a = mean(mr_a);
+% plotting
+if all % without grouping
+    mean_a = mean(mr_a); % average across subjects
     error_a = sqrt(var(mr_a)*(numSubj-1));
     mean_r = mean(mr_r);
     error_r = sqrt(var(mr_r)*(numSubj-1));
     mean_all = mean(mr);
     error_all = sqrt(var(mr)*(numSubj-1));
-    C = [1 0 0];
+    C = [1 0 0]; 
     
     figure();
     ax1 = gca;
@@ -154,26 +160,26 @@ if all
     ax3 = gca;
     ax = superbar(mean_all, 'E', error_all, 'BarFaceColor', 'none', 'BarEdgeColor', permute(C, [3 1 2]), 'ErrorbarLineWidth', 1.5);
     set(ax, 'LineWidth', 3);
-else
+else % with grouping
     figure();
     ax1 = gca;
-    ax_a = TFS_groupbar(mr1_a, mr2_a, group_legend, size(mr1_a, 1), size(mr2_a, 1), greater, 0, 0);
+    ax_a = TFS_groupbar(mr1_a, mr2_a, size(mr1_a, 1), size(mr2_a, 1), greater, 0, 0);
     set(ax_a, 'LineWidth', 3);
     legend(ax_a(1,:), group_legend, 'Location', 'Best');
     
     figure();
     ax2 = gca;
-    ax_r = TFS_groupbar(mr1_r, mr2_r, group_legend, size(mr1_r, 1), size(mr2_r, 1), greater, 0, 0);
+    ax_r = TFS_groupbar(mr1_r, mr2_r, size(mr1_r, 1), size(mr2_r, 1), greater, 0, 0);
     set(ax_r, 'LineWidth', 3);
     legend(ax_r(1,:), group_legend, 'Location', 'Best');
     
     figure();
     ax3 = gca;
-    ax_r_dashed = TFS_groupbar(mr1_r, mr2_r, group_legend, size(mr1_r, 1), size(mr2_r, 1), greater, 0, 1);
+    ax_r_dashed = TFS_groupbar(mr1_r, mr2_r, size(mr1_r, 1), size(mr2_r, 1), greater, 0, 1);
     set(ax_r_dashed, 'LineWidth', 3);
     set(ax_r_dashed, 'LineStyle', '--');
     hold on;
-    ax_a_r = TFS_groupbar(mr1_a, mr2_a, group_legend, size(mr1_a, 1), size(mr2_a, 1), greater, 0, 0);
+    ax_a_r = TFS_groupbar(mr1_a, mr2_a, size(mr1_a, 1), size(mr2_a, 1), greater, 0, 0);
     set(ax_a_r, 'LineWidth', 3);
     ylabel(ax3, 'Thresholds [dB] re: control/reverb,control');
     title(ax3, strcat('Masking release - SNR difference [dB], n =', num2str(numel(idx_all))));
@@ -181,7 +187,7 @@ else
     
     figure();
     ax4 = gca;
-    ax_diff = TFS_groupbar(diff1, diff2, group_legend, size(diff1, 1), size(diff2, 1), less, 1, 0);
+    ax_diff = TFS_groupbar(diff1, diff2, size(diff1, 1), size(diff2, 1), less, 1, 0);
     set(ax_diff, 'LineWidth', 3);
     ylabel(ax4, 'reverb vs non-reverb thresholds [dB]');
     title(ax4, 'Threshold increase [dB]');

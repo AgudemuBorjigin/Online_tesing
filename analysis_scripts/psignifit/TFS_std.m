@@ -1,11 +1,12 @@
 function [percent_std, percent_std_jk, thresh_std, thresh_std_jk, thresh_jk] = TFS_std(data, numSubj, options, dataColor, lineColor, threshType)
+% threshold calculation for each subject
 thresh = zeros(1, numSubj);
 for i = 1:numSubj
     result = psignifit(squeeze(data(i, :, :)),options);
     [~, thresh(i)] = TFS_plotFit(result, dataColor, lineColor, 0, 0, threshType);
 end
 thresh_std = std(thresh);
-
+% percent correct at each condition step
 percent = zeros(size(data, 2), numSubj);
 for i = 1:numSubj
     data_temp = squeeze(data(i, :, :));

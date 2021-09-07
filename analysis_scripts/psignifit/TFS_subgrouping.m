@@ -1,7 +1,8 @@
 function [data_group1, data_group2, data_group, data1, data2] = TFS_subgrouping(data, idx_all)
+% group data into two groups based on idx_all
 data_group1 = zeros(size(data, 2), size(data, 3));
 data_group2 = data_group1;
-data_group = data_group1;
+data_group = data_group1; % grand average
 data1 = zeros(sum(idx_all(:)==1), size(data, 2), size(data, 3));
 data2 = zeros(sum(idx_all(:)==2), size(data, 2), size(data, 3));
 count_1 = 0;

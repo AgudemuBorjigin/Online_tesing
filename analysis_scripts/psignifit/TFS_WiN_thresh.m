@@ -1,4 +1,5 @@
 function thresh = TFS_WiN_thresh(data, options, plotOption, option_data, conds, threshType, ttl)
+% extracting/crowding data
 data_group = zeros(size(data, 2), size(data, 3), size(data, 4));
 for s = 1:size(data, 1)
     for i = 1:size(data, 2)
@@ -11,7 +12,7 @@ for s = 1:size(data, 1)
 end
 % threshold calculation
 % initialization
-thresh = zeros(1, size(data_group, 1));
+thresh = zeros(1, size(data_group, 1)); % number of conditions
 h = zeros(1, size(data_group, 1));
 idx_cond = 1:size(data_group, 1);
 % group average thresholds

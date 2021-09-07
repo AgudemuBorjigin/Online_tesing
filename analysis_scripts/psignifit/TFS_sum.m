@@ -1,4 +1,5 @@
 function data_group = TFS_sum(data)
+% sums data across the first dimension
 data_group = zeros(size(data, 2), size(data, 3));
 for s = 1:size(data, 1)
     for i = 1:size(data, 2)

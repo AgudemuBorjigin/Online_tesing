@@ -1,18 +1,13 @@
-function ax = TFS_groupbar(mr1, mr2, group_legend, numSubj1, numSubj2, greater, collapse, overlap)
+function ax = TFS_groupbar(mr1, mr2, numSubj1, numSubj2, greater, collapse, overlap)
 mean1 = mean(mr1);
 mean2 = mean(mr2);
 var1 = var(mr1)*(numSubj1-1);
 var2 = var(mr2)*(numSubj2-1);
 error1 = sqrt(var1);
 error2 = sqrt(var2);
-if collapse
-    
+if collapse % merging data across conditions, reverse variane pooling
     var1_mean = 1/(sum(1./var1));% if conditions are independent
     var2_mean = 1/(sum(1./var2));
-%     error1 = [error1, sqrt(var1_mean)];
-%     error2 = [error2, sqrt(var2_mean)];
-%     mean1 = [mean1, mean(mean1)];
-%     mean2 = [mean2, mean(mean2)];
     error1 = [sqrt(var1_mean), 0];
     error2 = [sqrt(var2_mean), 0];
     mean1 = [sum(mean1./var1)/sum(1./var1), 0];

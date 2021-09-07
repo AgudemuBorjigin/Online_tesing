@@ -1,4 +1,5 @@
 function rt_mean = TFS_RT_mean(data)
+% crowding reaction times from all individuals in the data into one entity
 data_group = zeros(size(data, 2), size(data, 3), size(data, 1)*size(data, 4));
 for i = 1:size(data, 2)
     for j = 1:size(data, 3)

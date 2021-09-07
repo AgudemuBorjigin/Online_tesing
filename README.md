@@ -15,4 +15,23 @@ Scripts for analyzing data that are collected from online platformâ€”Prolific
    3) "scottclowe-superbar-ce333a9" subfolder includes functions for plotting errorbars, with "significe" stars
    
 3. The "TFS" analysis scripts within the "psignifit" subfolder:
-   1) 
+   1) "TFS.m": run this script first to group all listeners into two groups, based on their sensory measurements
+      1) "TFS_plotFit.m": estimates the threshold, based on Bayetian method; plot optional
+      2) Regresses out the ILD from ITD and binaural FM and the combination of ITD and FM from the ILD
+      3) "TFS_grouping.m": groups individuals based on those residuals
+         1) "TFS_clustering.m": group subjects based on k-means clustering, based on ITD and FM thresholds
+            or ILD thresholds only
+         2) "TFS_plotGroup.m": plotting Bayesian estimates for population data that are grouped based on ITD, FM, and ILD
+            1) "TFS_subgrouping.m": groups the data
+            2) "TFS_std.m": jsck-knife sampling for calculating the std; each subject does not have enough trials;
+               1) "TFS_sum.m":
+   2) "TFS_WiN.m": plot word-in-noise data, grouped based on TFS measures
+      1) "TFS_plotWiN.m"—main function
+      2) "TFS_WiN_thresh.m"
+      3) "superbar.m": bar plots with significance star
+         1) "TFS_groupbar.m":
+   3) "TFS_reaction_time.m": 
+      1) "TFS_plotRT.m":
+         1) "TFS_RT_mean.m": crowds reaction times from all but one individuals (jack-knife resampling) into one entity
+         2) "superbar.m": bar plots with significance star. Examples of the usage of this function is in the 
+         "scottclowe-superbar-ce333a9" folder ("demo_superbar.m")

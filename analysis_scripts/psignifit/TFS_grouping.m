@@ -19,10 +19,18 @@ data_pairs = [thresh_ITD, thresh_FM];
 data_pairs = thresh_ILD;
 [idx_all_ild, C_ild] = TFS_clustering(data_pairs, idx_good, color);
 %% plotting group data
-TFS_plotGroup(data_ITD, data_FM, data_ILD, idx_all_itd_fm, options, threshType, color)
-TFS_plotGroup(data_ITD, data_FM, data_ILD, idx_all_ild, options, threshType, color)
+xlabel = 'ITD [us]'; % 'fdev [dB re: 1 Hz]', 'ILD [dB]'
+% ITD data grouped by TFS sensitivity
+TFS_plotGroup(data_ITD, idx_all_itd_fm, options, threshType, color, xlabel)
+% ITD data grouped by non-TFS sensitivity
+TFS_plotGroup(data_ITD, idx_all_ild, options, threshType, color, xlabel)
+xlabel = 'fdev [dB re: 1 Hz]';
+% FM data grouped by TFS sensitivity
+TFS_plotGroup(data_FM, idx_all_itd_fm, options, threshType, color, xlabel)
+% FM data grouped by non-TFS sensitivity
+TFS_plotGroup(data_FM, idx_all_ild, options, threshType, color, xlabel)
 %% save
-savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/analysis/psignifit/TFS.mat';
+savename = '/Users/Agudemu/Dropbox/Lab_SNAP/Experiment/online_experiments/snaplabonline/Online_tesing/analysis_scripts/psignifit/TFS.mat';
 save(savename, 'idx_all_itd_fm', 'C_itd_fm', 'idx_all_ild', 'C_ild');
 
 end
