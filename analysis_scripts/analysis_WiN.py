@@ -106,7 +106,11 @@ def sortData(subjList, data, conds, snrs, followup):
                 # reaction time
                 for j in range(len(rts_single[index_cond][index_snr])):
                     if rts_single[index_cond][index_snr][j] == 0:
-                        rts_single[index_cond][index_snr][j] = rt
+                        if correct:
+                            rts_single[index_cond][index_snr][j] = rt
+                        else:
+                            rts_single[index_cond][index_snr][j] = 20000 # if wrong answer, setting the reaction time to a
+                                                                         # a very high number, 20 s
                         break
                 counters_all[index_cond][index_snr] += 1 # population
                 # counting the number of correct trials
