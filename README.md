@@ -35,3 +35,6 @@ Scripts for analyzing data that are collected from online platform—Prolific
          1) "TFS_RT_mean.m": crowds reaction times from all but one individuals (jack-knife resampling) into one entity
          2) "superbar.m": bar plots with significance star. Examples of the usage of this function is in the 
          "scottclowe-superbar-ce333a9" folder ("demo_superbar.m")
+4. In the "audios_WiN" fodler:
+    1) WiN_AWS: prepares (rename) the speech-in-noise mixtures to be uploaded onto AWS server
+5. In the "jsons" folder: prepares json files for online experiments, based on csv files of the audios

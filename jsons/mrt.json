@@ -1,0 +1,143 @@
+{
+  "instructions": ["Great! Welcome to the task itself. To begin, make sure you are still wearing your headphones or earphones. <p></p>Once you are ready, click <strong>Continue</strong> for further instructions.","On each screen, you will hear a voice prompting you to select a <strong>WORD</strong>. Your task is click on that <strong>WORD</strong>", "There will be some background noise, but try to ignore that and focus on the voice.", "When you are ready, click <strong>Continue</strong> to hear the first word."],
+  "feedback": true,
+  "holdfeedback": false,
+  "feedbackdur": 600,
+  "serveraudio": true,
+  "estimatedduration": 4,
+  "randomize":false,
+  "isi": 600,
+  "volume":[
+    {
+    "plugin": "html-button-response",
+    "prompt": "Welcome! This task involves listening to sounds and providing responses. As a first step, we need to set an appropriate volume level for our task. To begin, make sure you are in a quiet room and wearing your headphones or earphones. Please do not use desktop speakers or laptop speakers. Also, wireless/bluetooth headphones/earphones can sometimes cause problems with our task. So please make sure you are wearing wired headphones/earphones.<p> Please bring down your computer volume to 10-20% of maximum. Then, click <strong>Continue</strong> to proceed.</p>",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "When you are ready, hit the <strong>Play</strong> button to play a sample sound.<p> While that sound is playing, adjust your computer volume up to a comfortable (but not too loud) level.</p>",
+    "choices": ["Play"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Now adjust your computer volume up to a comfortable (but not too loud) level.",
+    "stimulus": "volumeSetStim.wav",
+    "choices": ["I have adjusted the volume, let's continue"]
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "Thanks for adjusting your computer volume. We will use this volume setting for the remainder of the task. Please do not adjust the volume anymore throughout the task, as that could lead to sounds being too loud or too soft.<p>If this sounds OK, click <strong>Continue</strong> to begin the task.</p>",
+    "choices": ["Continue"]
+    }
+  ],
+  "trials":[
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["back","bath","bad","bass","bat","ban"],
+    "answer": 3,
+    "stimulus": "mrttrial1.wav",
+    "cond": 6,
+    "annot": {"SNR": "5"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["fill","kill","will","hill","till","bill"],
+    "answer": 3,
+    "stimulus": "mrttrial2.wav",
+    "cond": 5,
+    "annot": {"SNR": "0"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["hark","dark","mark","bark","park","lark"],
+    "answer": 6,
+    "stimulus": "mrttrial3.wav",
+    "cond": 4,
+    "annot": {"SNR": "-5"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["heat","neat","feat","seat","meat","beat"],
+    "answer": 5,
+    "stimulus": "mrttrial4.wav",
+    "cond": 3,
+    "annot": {"SNR": "-10"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["coil","oil","soil","toil","boil","foil"],
+    "answer": 4,
+    "stimulus": "mrttrial5.wav",
+    "cond": 2,
+    "annot": {"SNR": "-15"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["pen","hen","men","then","den","ten"],
+    "answer": 3,
+    "stimulus": "mrttrial6.wav",
+    "cond": 1,
+    "annot": {"SNR": "-20"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["vest","test","rest","best","west","nest"],
+    "answer": 5,
+    "stimulus": "mrttrial7.wav",
+    "cond": 6,
+    "annot": {"SNR": "5"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["went","sent","bent","dent","tent","rent"],
+    "answer": 3,
+    "stimulus": "mrttrial8.wav",
+    "cond": 5,
+    "annot": {"SNR": "0"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["heave","hear","heat","heal","heap","heath"],
+    "answer": 4,
+    "stimulus": "mrttrial9.wav",
+    "cond": 4,
+    "annot": {"SNR": "-5"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["pig","pill","pin","pip","pit","pick"],
+    "answer": 2,
+    "stimulus": "mrttrial10.wav",
+    "cond": 3,
+    "annot": {"SNR": "-10"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["same","name","game","tame","came","fame"],
+    "answer": 3,
+    "stimulus": "mrttrial11.wav",
+    "cond": 2,
+    "annot": {"SNR": "-15"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Select the <strong>word</strong> prompted by the voice",
+    "choices": ["wick","sick","kick","lick","pick","tick"],
+    "answer": 1,
+    "stimulus": "mrttrial12.wav",
+    "cond": 1,
+    "annot": {"SNR": "-20"}
+    }
+  ]
+}

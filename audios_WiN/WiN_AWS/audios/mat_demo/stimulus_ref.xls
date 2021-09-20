@@ -1,0 +1,24 @@
+1,, space,M1
+4,, anechoic,M1
+1,, echo-noise,F1
+3,, echo-noise,F1
+6,, echo-sum,F1
+2,, echo-pitch,F1
+5,, echo,F1
+2,, echo-ref,M1
+3,, sum,M1
+4,, ref,F1
+5,, echo-ref,M1
+6,, echo-sum,M1
+5,, noise,M1
+2,, echo-space,F1
+4,, pitch,F1
+6,, noise,M1
+5,, echo-space,F1
+6,, anechoic,F1
+4,, pitch,M1
+1,, ref,M1
+3,, sum,F1
+1,, echo-pitch,F1
+2,, space,M1
+3,, echo,M1

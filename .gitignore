@@ -1,3 +1,7 @@
+# wave/.mat files
+*.mat
+*.wav
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
